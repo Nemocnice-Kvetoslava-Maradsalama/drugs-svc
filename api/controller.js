@@ -35,6 +35,9 @@ var controllers = {
     },
     deleteDrug: function(req, res) {
         drug.delete(req,res,(err,dist) => err ? req.send(err) : req.json(dist))
+    },
+    suggestPrescription: function(req, res) {
+        drug.suggest(req, res, (err,dist) => err ? req.send(err) : req.json(dist))
     }
 };
 

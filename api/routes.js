@@ -8,4 +8,5 @@ module.exports = function(app) {
     app.route('/readDrug/:id').get(controller.readDrug);
     app.route('/updateDrug/:amount/:id').get(controller.updateDrugAmount);
     app.route('/deleteDrug/:id').get(controller.deleteDrug);
+    app.route('/suggestPrescription/:illnessIds').get(controller.suggestPrescription)
 };
