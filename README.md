@@ -11,3 +11,6 @@ To registrate with eureka:
   
 To run the servise  
 ```npm start  ```
+
+
+configuration is at ```eureka.js``` file, where you will probably need to change address of eureka server 
