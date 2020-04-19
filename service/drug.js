@@ -2,6 +2,8 @@ var request = require('request');
 
 var pgp = require('pg-promise')(/* options */)
 var db = pgp('postgres://postgres:postgres@localhost:5555/testdb')
+var eurekaa = require('../eureka')
+const fetch = require("node-fetch")
 
 // MOCK of DISEASE-SVC
 const giveMeDrugIdThatCuresThisIllness = (drugId) => {
@@ -45,14 +47,16 @@ var drug = {
         .then(result => res.json(result.rowCount))
         .catch(e => res.json(e))
     },
-    suggest: function(req,res) {
+    suggest: function(req,res) {  // RETURNS MOCKED DATA FOR NOW
       let drugs = {}
       let illnesses = req.params.illnessIds.split(',')
       if (illnesses){
          illnesses.forEach(illness => {
           let potentialDrugs = giveMeDrugIdThatCuresThisIllness(illness)
           // TODO: check drug availability
-          // TODO: call Personal -> ask for access level
+          const personnelBaseUrl = eurekaa.getInstances()
+          // TODO: call Personal -> ask for access level, line above is just a check that communication works
+          fetch(personnelBaseUrl + '/accounts').then(resp => console.log('response!: ' + JSON.stringify(resp))).catch(e => console.log(e))
           drugs[illness] = potentialDrugs
         });
       }
