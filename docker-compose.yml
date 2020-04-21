@@ -1,0 +1,29 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: bash -c "node server.js && node eureka.js"
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://localhost:5555
+    networks: 
+      - nemocnice-network
+  postgres:
+    image: postgres:9.4
+    volumes: 
+        - ./dbinitializer:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testdb
+networks:
+    postgres:
+      driver: bridge
+    nemocnice-network:
+      external:
+        name: nemocnice-network

@@ -19,7 +19,7 @@ const Eureka = require('eureka-js-client').Eureka;
             fetchRegistry: true
         },
         eureka: {
-            host: '192.168.111.46',
+            host: '192.168.0.118',
             port: 8761,
             servicePath: '/eureka/apps',
         },

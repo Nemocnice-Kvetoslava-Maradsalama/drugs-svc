@@ -50,16 +50,16 @@ var drug = {
     suggest: function(req,res) {  // RETURNS MOCKED DATA FOR NOW
       let drugs = {}
       let illnesses = req.params.illnessIds.split(',')
-      if (illnesses){
-         illnesses.forEach(illness => {
-          let potentialDrugs = giveMeDrugIdThatCuresThisIllness(illness)
-          // TODO: check drug availability
-          const personnelBaseUrl = eurekaa.getInstances()
-          // TODO: call Personal -> ask for access level, line above is just a check that communication works
-          fetch(personnelBaseUrl + '/accounts').then(resp => console.log('response!: ' + JSON.stringify(resp))).catch(e => console.log(e))
-          drugs[illness] = potentialDrugs
-        });
-      }
+      // if (illnesses){
+      //    illnesses.forEach(illness => {
+      //     let potentialDrugs = giveMeDrugIdThatCuresThisIllness(illness)
+      //     // TODO: check drug availability
+      //     // const personnelBaseUrl = eurekaa.getInstances()
+      //     // // TODO: call Personal -> ask for access level, line above is just a check that communication works
+      //     // fetch(personnelBaseUrl + '/accounts').then(resp => console.log('response!: ' + JSON.stringify(resp))).catch(e => console.log(e))
+      //     // drugs[illness] = potentialDrugs
+      //   });
+      // }
       res.json(drugs)
     }
 };
