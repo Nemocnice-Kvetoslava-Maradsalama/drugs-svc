@@ -5,9 +5,9 @@ const Eureka = require('eureka-js-client').Eureka;
             app: 'drug-svc',
             instanceId: 'one1',
             hostName: 'localhost',
-            ipAddr: '127.0.0.1',
+            ipAddr: 'localhost',
             port: {
-                '$': 3000,
+                '$': 5000,
                 '@enabled': true,
             },
             vipAddress: 'drug-svc',
@@ -19,7 +19,7 @@ const Eureka = require('eureka-js-client').Eureka;
             fetchRegistry: true
         },
         eureka: {
-            host: '192.168.0.118',
+            host: '172.28.0.2',
             port: 8761,
             servicePath: '/eureka/apps',
         },

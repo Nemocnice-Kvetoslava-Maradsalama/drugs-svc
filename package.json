@@ -1,20 +1,20 @@
 {
   "name": "drugs-svc",
-  "version": "0.0.0",
-  "main": "server.js",
-  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"no test specified\" && exit 1"
+    "start": "node server.js",
+    "start:dev": "nodemon server.js"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
+    "body-parser": "^1.18.3",
     "eureka-js-client": "^4.5.0",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
-    "morgan": "~1.9.1",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.1",
     "node-fetch": "^2.6.0",
-    "pg-promise": "^10.5.0"
+    "nodemon": "^1.18.9"
   }
 }
