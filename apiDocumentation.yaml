@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Documentation of drugs servise endpoints
+  version: 1.0.0
+  contact:
+    email: penkobor@fel.cvut.cz
+paths:
+  "/drug"
+    get:
+      summary: gets all drugs in array
+      parameters: 
+        - name: id
+        in: path
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+              examples:
+                response:
+                  value:
+                    - amount: "21"
+                      _id: "5ea5a33db5264107821815db"
+                      name: "Forlax"
+                      available: "true"
+                    - amount: "2"
+                      _id: "98s5234454g64107821815db"
+                      name: "Paralen"
+                      available: "true"
+                    - amount: "76"
+                      _id: "32s5234234464107821815db"
+                      name: "Nalgesin S"
+                      available: "true"
+          "400":
+            description: "error"
+  "/drug/byId/{id}":
+    get:
+      summary: gets drug object by Id
+      parameters: 
+        - name: id
+        in: path
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: json
+              examples:
+                response:
+                  value:
+                    - amount: "21"
+                      _id: "5ea5a33db5264107821815db"
+                      name: "Forlax"
+                      available: "true"
+          "400":
+            description: "error"
+  "/drug/byName/{name}":
+    get:
+      summary: gets drug object by name
+      parameters: 
+        - name: name
+        in: path
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: json
+              examples:
+                response:
+                  value:
+                    - amount: "21"
+                      _id: "5ea5a33db5264107821815db"
+                      name: "Forlax"
+                      available: "true"
+          "400":
+            description: "error"
+  "/drug/updateById/{id}/{availability}/{amount}":
+    patch:
+      summary: updates drug
+      parameters:
+        - name: id
+        in: path
+        required: true
+        type: ObjectId
+        - name: availability
+        in: path
+        required: true
+        type: Boolean
+        - name: amount
+        in: path
+        required: true
+        type: number
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: json
+              examples:
+                response:
+                  value:
+                    - amount: "21"
+                      _id: "5ea5a33db5264107821815db"
+                      name: "Forlax"
+                      available: "true"
+          "400":
+            description: "error"
+  "/drug/deleteById/{id}":
+    post: 
+      summary: deletes drug
+      parameters: 
+        - name: id
+        in: path
+        required: true
+        type: ObjectId
+      responses:
+        "200":
+          description: "OK"
+        "400":
+          description: "fail"
+  "/drug/suggestPrescription/{illnessIds}":
+    get: 
+      summary: accepts illnessIds separated by comma (e.g /1,43,5) and returns array of drug ids 
+      parameters:
+        - name: illnessIds
+        in: path
+        required: true
+        type: numbers separated by commas (without spaces please)
+      responses:
+        "200":
+          description: array of drug ids present in db
+          examples:
+            response:
+              value:
+                - ["5ea5a33db5264180211815dd", "5ea5a33db52634534534815dd"]
+        "400":
+          description: "error"
+          
