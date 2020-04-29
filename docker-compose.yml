@@ -1,6 +1,6 @@
 version: '3'
 services:
-  web:
+  drugs-svc:
     image: "drug-svc"
     build: .
     environment: 
@@ -17,8 +17,6 @@ services:
       - "mongo"
   mongo:
     image: "mongo"
-    ports:
-      - "27017:27017"
     networks: 
       - "mongo"
 networks: 

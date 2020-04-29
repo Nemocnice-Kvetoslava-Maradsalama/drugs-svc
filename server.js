@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const Eureka = require('eureka-js-client').Eureka;
 
 
+const os = require('os')
+
 const PORT = process.env.PORT || 5000;
 const EUREKA_PORT = process.env.EUREKA_PORT || 8761
 const EUREKA_HOST = process.env.EUREKA_HOST || '172.28.0.2'
@@ -17,6 +19,15 @@ app.use(bodyParser.json())
 // app.listen(PORT);
 
 const drug = require('./drugModel.js').drug
+const getNetworkIPAddress = () => {
+    const interfaces = os.networkInterfaces();
+    const eth0Interfaces = interfaces['eth0'];
+    if (eth0Interfaces.length > 0) {
+        return eth0Interfaces[0].address;
+    } else {
+        return '127.0.0.1';
+    }
+};
 let client = null
 // get all
 app.get('/drug', (req, res) => {
@@ -70,19 +81,30 @@ app.get('/drug/suggestPrescription/:illnessIds', (req,res)=>{
     let drugs = {}
       let illnesses = illnessIds.split(',')
         const instances = client.getInstancesByAppId('DISEASE-SVC');
-        const hostname = `http:// ${instances[0].hostName}:${instances[0].port.$}`
-        // ask 
-        // if (illnessIds){
-        //     illnessIds.forEach(id=>{
-        //         //ask for disease for this id
-        //         // fetch(hostname).then(disease => storage.push(disease.Id))
-        //     })
-        // }
-        drug.find().then((drugs)=>{
-            ids = []
-            drugs.forEach(drug => ids.push(drug._id))
-            res.status(201).send(ids)
-        }).catch(err => res.status(400).send(err))
+        const hostname = `http://${instances[0].hostName}:${instances[0].port.$}`
+        console.log(hostname)
+        //ask 
+        let count = illnesses.length
+        if (illnesses){
+            let n = 0
+            illnesses.forEach(id=>{
+                //ask for disease for this id
+                let status
+                fetch(`${hostname}/disease/${id}`,{method:'GET'}).then(disease => {
+                    status = disease.status
+                    return disease.json()
+                }).then((body)=>{
+                    drugs[id] = body.cures
+                    n = n+1
+                    if (n == count){
+                        res.status(200).send(drugs)
+                    }
+                }).catch(e => console.log(e))
+                
+            })  
+        } else {
+            res.status(400).send('fail')
+        }
 })
 
 const mongoose = require('mongoose');
@@ -111,7 +133,7 @@ mongoose.connect(db_uri).then(() => {
             app: 'drug-svc',
             instanceId: 'one1',
             hostName: 'localhost',
-            ipAddr: '127.0.0.1',
+            ipAddr: getNetworkIPAddress(),
             port: {
                 '$': PORT,
                 '@enabled': true,
