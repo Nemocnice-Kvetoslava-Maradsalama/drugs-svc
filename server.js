@@ -16,6 +16,7 @@ const EUREKA_PORT = process.env.EUREKA_PORT || 8761
 const EUREKA_HOST = process.env.EUREKA_HOST || '172.28.0.2'
 const drug = require('./models/drugModel.js').drug
 const app = express();
+const fetch = require('node-fetch')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -91,6 +92,21 @@ mongoose.connect(db_uri).then(() => {
     });
     client.start((error) => {
         logger.info(error || 'Eureka Started!');
+        const diseaseInstances = client.getInstancesByAppId('PERSONNEL-SVC');
+        const personnelHostname = `http://${diseaseInstances[0].ipAddr}:${diseaseInstances[0].port.$}`
+        logger.info('Connected to PERSONNEL-SVC running on ' + personnelHostname)
+        const requestUrl = personnelHostname + '/auth/login'
+        axios({
+            method: 'post',
+            url: requestUrl,
+            data: {
+                username: 'testuser',
+                password: 'testpassword'
+            }
+        }).then((resp) => {
+            logger.info('Successfully recieved access_token from PERSONNEL-SVC: ' + String(resp.data.access_token).slice(0,14) + '...')
+        }).catch((e)=>{
+            logger.error(e)
+        })
     });
-
-})
+}).catch(e=>logger.error(e))
