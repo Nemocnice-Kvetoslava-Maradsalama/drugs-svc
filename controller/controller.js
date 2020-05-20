@@ -5,7 +5,6 @@ function getPrescription(req, res, logger, client, axios) {
     let error = ''
     setTimeout(() => {
         source.cancel();
-        logger.error('DISEASE-SVC is taking too much time to respond')
         error = 'DISEASE-SVC is taking too much time to respond'
       }, 4000);
     let drugs = {};
