@@ -1,11 +1,10 @@
-function getPrescription(req, res, logger, client, axios) {
+function getPrescription(req, res, logger, client, axios, access_tkn) {
     const { illnessIds } = req.params;
     const CancelToken = axios.CancelToken;
     let source = CancelToken.source();
     let error = ''
     setTimeout(() => {
         source.cancel();
-        logger.error('DISEASE-SVC is taking too much time to respond')
         error = 'DISEASE-SVC is taking too much time to respond'
       }, 4000);
     let drugs = {};
@@ -33,7 +32,7 @@ function getPrescription(req, res, logger, client, axios) {
         let n = 0;
         let fail = false;
         illnesses.forEach(id => {
-            axios.get(`${diseaseHostname}/disease/${id}`, { cancelToken: source.token })
+            axios.get(`${diseaseHostname}/disease/${id}`, { cancelToken: source.token, headers: { Authorization: access_tkn } })
                 .then(function (response) {
                     if (!response || !response.data) {
                         error = `Error: disease with id ${id} does not exist`;
@@ -47,7 +46,7 @@ function getPrescription(req, res, logger, client, axios) {
                 .catch(function (err) {
                     // handle error
                     const errTxt = 'Error: something broke while requesting data from DISEACE-SVC'
-                    logger.error(errTxt);
+                    logger.error(errTxt,' ', err.message);
                     if (!error.includes('taking too much')) {
                         error = errTxt
                     }

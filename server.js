@@ -34,13 +34,15 @@ const getNetworkIPAddress = () => {
 
 let client = null
 
+let access_tkn = null
+
 app.get('/drug', (req, res) => getAll(res, logger, drug))
 app.get('/drug/byId/:id', (req,res) => getDrugById(req, res, logger, drug))
 app.get('/drug/byName/:name', (req,res) => getDrugByName(req, res, logger, drug))
 app.patch('/drug/updateById/:id/:availability/:amount', (req,res)=> updateDrug(req, res, logger, drug))
 app.post('/drug/deleteById/:id', (req,res)=>deleteDrug(req, res, logger, drug))
 app.post('/drug/:name/:availability', (req,res) => createDrug(req, res, logger, drug))
-app.get('/drug/suggestPrescription/:illnessIds', (req,res)=> getPrescription(req, res, logger, client, axios))
+app.get('/drug/suggestPrescription/:illnessIds', (req,res)=> getPrescription(req, res, logger, client, axios, access_tkn))
 
 const mongoose = require('mongoose');
 const db_uri = 'mongodb://mongo:27017/drugService'
@@ -104,6 +106,7 @@ mongoose.connect(db_uri).then(() => {
                 password: 'testpassword'
             }
         }).then((resp) => {
+            this.access_tkn = resp.data.access_token
             logger.info('Successfully recieved access_token from PERSONNEL-SVC: ' + String(resp.data.access_token).slice(0,14) + '...')
         }).catch((e)=>{
             logger.error(e)
