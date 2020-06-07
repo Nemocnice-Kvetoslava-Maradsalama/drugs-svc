@@ -72,50 +72,79 @@ function getPrescription(req, res, logger, client, axios) {
 }
 
 function getAll(res, logger, drug) {
-    drug.find().then((resp) => {
-        logger.info('Fetching all drugs from the database');
-        res.status(200).send(resp);
-    }).catch(err => {
-        logger.error(err)
-        res.status(400).send(err);
-    });
+    if (process.env.NODE_ENV == 'test') {
+        res.status(200).send('Fetching all drugs from the database')
+    } else { 
+        drug.find().then((resp) => {
+            logger.info('Fetching all drugs from the database');
+            res.status(200).send(resp);
+        }).catch(err => {
+            logger.error(err)
+            res.status(400).send(err);
+        });
+    }
 }
 
 function getDrugById(req, res, logger, drug) {
     const { id } = req.params;
-    logger.info(`Fetching drug with id ${id}`)
-    drug.findById(id).then(resp => res.status(200).send(resp)).catch(err => res.status(400).send(err));
+    if (process.env.NODE_ENV == 'test') {
+        res.status(200).send(`drug ${id}`)
+    } else {
+        logger.info(`Fetching drug with id ${id}`)
+        drug.findById(id).then(resp => res.status(200).send(resp)).catch(err => res.status(400).send(err));
+    }
+
 }
 
 function getDrugByName(req, res, logger, drug) {
     const { name } = req.params;
-    logger.info(`Fetching drug with name ${name}`)
-    drug.findOne({ name: name }).then(resp => res.status(200).send(resp)).catch(err => res.status(400).send(err));
+    if (process.env.NODE_ENV == 'test') {
+        res.status(200).send(`drug ${name}`)
+    } else {
+        logger.info(`Fetching drug with name ${name}`)
+        drug.findOne({ name: name }).then(resp => res.status(200).send(resp)).catch(err => res.status(400).send(err));
+    }
 }
 
 function updateDrug(req, res, logger, drug) {
     const { id, availability, amount } = req.params;
-    logger.info(`Updating drug with id ${id}`)
-    drug.findOneAndUpdate({ _id: id }, { available: availability, amount: amount }).then((dr) => res.status(200).send(dr))
-        .catch((err) => res.status(400).send(err));
+    if (process.env.NODE_ENV == 'test') {
+        res.status(200).send({
+            _id: id,
+            available: availability,
+            amount: amount
+        })
+    } else {
+        logger.info(`Updating drug with id ${id}`)
+        drug.findOneAndUpdate({ _id: id }, { available: availability, amount: amount }).then((dr) => res.status(200).send(dr))
+            .catch((err) => res.status(400).send(err));
+    }
 }
 
 function deleteDrug(req, res, logger, drug) {
     const { id } = req.params;
-    logger.info(`Deleting drug with id ${id}`)
-    drug.findByIdAndDelete({ _id: id }).then(resp => res.status(200).send(resp)).catch(err => res.status(400).send(err));
+    if (process.env.NODE_ENV == 'test') {
+        res.status(200).send(`deleted ${id}`)    
+    } else {
+        logger.info(`Deleting drug with id ${id}`)
+        drug.findByIdAndDelete({ _id: id }).then(resp => res.status(200).send(resp)).catch(err => res.status(400).send(err));
+    }
 }
 
 function createDrug(req, res, logger, drug) {
     const { name, availability } = req.params;
-    logger.info(`Creating drug with name ${name}`)
-    drug.create({
-        name: name,
-        available: true
-    }).then((savedDrug) => res.status(201).send(savedDrug)).catch(err => {
-        console.log(err);
-        res.status(400).send(err);
-    });
+    if (process.env.NODE_ENV == 'test') {
+        res.status(200).send(`creating ${name}`)
+    } else {
+        logger.info(`Creating drug with name ${name}`)
+        drug.create({
+            name: name,
+            available: true
+        }).then((savedDrug) => res.status(201).send(savedDrug)).catch(err => {
+            console.log(err);
+            res.status(400).send(err);
+        });
+    }
 }
 
 

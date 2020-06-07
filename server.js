@@ -17,6 +17,7 @@ const EUREKA_HOST = process.env.EUREKA_HOST || '172.28.0.2'
 const drug = require('./models/drugModel.js').drug
 const app = express();
 const fetch = require('node-fetch')
+var mongodb = require('mongo-mock');
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -44,69 +45,74 @@ app.get('/drug/suggestPrescription/:illnessIds', (req,res)=> getPrescription(req
 
 const mongoose = require('mongoose');
 const db_uri = 'mongodb://mongo:27017/drugService'
-
-mongoose.connect(db_uri).then(() => {
-    logger.info('Connected to MongoDB on ' + db_uri)
-    logger.info('Listening on port: ' + PORT);
-    app.listen(PORT);
-    logger.info('Adding data to database')
-    drug.create({
-        name: "Forlax",
-        available: true,
-        amount: '21'
-    })
-    drug.create({
-        name: "Nalgesin S",
-        available: true,
-        amount: '32'
-    })
-    drug.create({
-        name: "Paralen",
-        available: true,
-        amount: '11'
-    })
-    logger.info('Registering with Eureka Server')
-    client = new Eureka({
-        instance: {
-            app: 'drug-svc',
-            instanceId: 'one1',
-            hostName: 'drug-svc',
-            ipAddr: getNetworkIPAddress(),
-            port: {
-                '$': PORT,
-                '@enabled': true,
-            },
-            vipAddress: 'drug-svc',
-            dataCenterInfo: {
-                '@class': 'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo',
-                name: 'MyOwn',
-            },
-            registerWithEureka: true,
-            fetchRegistry: true
-        },
-        eureka: {
-            host: EUREKA_HOST,
-            port: EUREKA_PORT,
-            servicePath: '/eureka/apps',
-        },
-    });
-    client.start((error) => {
-        logger.info(error || 'Eureka Started!');
-        const diseaseInstances = client.getInstancesByAppId('PERSONNEL-SVC');
-        const personnelHostname = `http://${diseaseInstances[0].ipAddr}:${diseaseInstances[0].port.$}`
-        logger.info('Connected to PERSONNEL-SVC running on ' + personnelHostname)
-        const requestUrl = personnelHostname + '/auth/login'
-        axios({
-            method: 'post',
-            url: requestUrl,
-            data: {
-                username: 'testuser',
-                password: 'testpassword'
-            }
-        }).then((resp) => {
-            logger.info('Successfully recieved access_token from PERSONNEL-SVC: ' + String(resp.data.access_token).slice(0,14) + '...')
-        }).catch((e)=>{
-            logger.error(e)
+if (process.env.NODE_ENV != 'test') {
+    mongoose.connect(db_uri).then(() => {
+        logger.info('Connected to MongoDB on ' + db_uri)
+        logger.info('Listening on port: ' + PORT);
+        app.listen(PORT);
+        logger.info('Adding data to database')
+        drug.create({
+            name: "Forlax",
+            available: true,
+            amount: '21'
         })
-    });
-}).catch(e=>logger.error(e))
+        drug.create({
+            name: "Nalgesin S",
+            available: true,
+            amount: '32'
+        })
+        drug.create({
+            name: "Paralen",
+            available: true,
+            amount: '11'
+        })
+        logger.info('Registering with Eureka Server')
+        client = new Eureka({
+            instance: {
+                app: 'drug-svc',
+                instanceId: 'one1',
+                hostName: 'drug-svc',
+                ipAddr: getNetworkIPAddress(),
+                port: {
+                    '$': PORT,
+                    '@enabled': true,
+                },
+                vipAddress: 'drug-svc',
+                dataCenterInfo: {
+                    '@class': 'com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo',
+                    name: 'MyOwn',
+                },
+                registerWithEureka: true,
+                fetchRegistry: true
+            },
+            eureka: {
+                host: EUREKA_HOST,
+                port: EUREKA_PORT,
+                servicePath: '/eureka/apps',
+            },
+        });
+        client.start((error) => {
+            logger.info(error || 'Eureka Started!');
+            const diseaseInstances = client.getInstancesByAppId('PERSONNEL-SVC');
+            if (diseaseInstances[0]){
+                const personnelHostname = `http://${diseaseInstances[0].ipAddr}:${diseaseInstances[0].port.$}`
+                logger.info('Connected to PERSONNEL-SVC running on ' + personnelHostname)
+                const requestUrl = personnelHostname + '/auth/login'
+                axios({
+                    method: 'post',
+                    url: requestUrl,
+                    data: {
+                        username: 'testuser',
+                        password: 'testpassword'
+                    }
+                }).then((resp) => {
+                    logger.info('Successfully recieved access_token from PERSONNEL-SVC: ' + String(resp.data.access_token).slice(0,14) + '...')
+                }).catch((e)=>{
+                    logger.error(e)
+                })
+            }
+        });
+    }).catch(e=>logger.error(e))
+}
+
+module.exports = app
