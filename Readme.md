@@ -12,7 +12,7 @@ There are 4 branches in this repository:
 * ```master``` - default
 * ```feature/requesting-disease-with-token``` - adjusted drug-svc to work with updated version of disease svc
 
-### Evaluation table:
+### Fulfilled point:
  - [x] Separate repositories for each microservice
  - [x] Implement some tests and test each service separately 
  - [x] Dependencies – explicitly declare and isolate dependencies
