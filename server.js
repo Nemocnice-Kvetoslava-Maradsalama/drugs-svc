@@ -35,6 +35,7 @@ const getNetworkIPAddress = () => {
 
 let client = null
 
+app.get('/documentation', (req,res) => res.sendFile('./documentation.html', { root: __dirname }))
 app.get('/drug', (req, res) => getAll(res, logger, drug))
 app.get('/drug/byId/:id', (req,res) => getDrugById(req, res, logger, drug))
 app.get('/drug/byName/:name', (req,res) => getDrugByName(req, res, logger, drug))
